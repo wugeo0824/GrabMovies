@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#4CAF50</color>
+    <color name="primary_dark">#388E3C</color>
+    <color name="primary_light">#C8E6C9</color>
+    <color name="accent">#00BCD4</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="white40">#66FFFFFF</color>
+
+    <color name="darkGreyBlue">#274863</color>
+    <color name="darkGreyBlue20">#33274863</color>
+    <color name="lightGrey">#E9E9E9</color>
+    <color name="paleBlueSky">#b2eaff</color>
+    <color name="paleBlueSky40">#66b2eaff</color>
+    <color name="lightBlueGrey">#d9dfec</color>
+    <color name="orangePink">#fe6a5d</color>
+    <color name="butterScotch">#fab63d</color>
+    <color name="black">#141414</color>
+    <color name="greenyBlue">#52c1a8</color>
+    <color name="cornFlowerBlue">#689ad4</color>
+    <color name="warmGrey">#7c7c7c</color>
+    <color name="denim">#3d6586</color>
+    <color name="paleWhite">#f5f5f5</color>
+    <color name="darkBlueGrey80">#CC182c3d</color>
+    <color name="windows_blue">#3279b4</color>
+
+    <color name="translucent_scrim_top">#26000000</color>
+    <color name="translucent_scrim_top_center">#0C000000</color>
+    <color name="translucent_scrim_bottom">#2A000000</color>
+    <color name="translucent_scrim_bottom_center">#0D000000</color>
+</resources>
