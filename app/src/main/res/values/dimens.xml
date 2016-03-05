@@ -9,4 +9,6 @@
     <dimen name="keyline_16dp">16dp</dimen>
     <dimen name="poster_height">225dp</dimen>
     <dimen name="sheet_text_scrim_height">88dp</dimen>
+
+    <dimen name="grid_padding">5dp</dimen>
 </resources>

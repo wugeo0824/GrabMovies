@@ -62,7 +62,6 @@ public class NowPlayingFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).hideSnack();
-        getMovies();
     }
 
     private void getMovies() {

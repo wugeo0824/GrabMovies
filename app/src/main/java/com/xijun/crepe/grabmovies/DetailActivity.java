@@ -13,6 +13,8 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,9 +67,18 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
+        // We don't want the status bar and nav bar to animate as that causes flickering:
+        // http://stackoverflow.com/questions/26600263/how-do-i-prevent-the-status-bar-and-navigation-bar-from-animating-during-an-acti
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+            Transition fade = new Fade();
+            fade.excludeTarget(android.R.id.statusBarBackground, true);
+            fade.excludeTarget(android.R.id.navigationBarBackground, true);
+            getWindow().setEnterTransition(fade);
+            getWindow().setReturnTransition(fade);
+
         }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         movieId = getIntent().getIntExtra(MOVIE_ID,-1);
