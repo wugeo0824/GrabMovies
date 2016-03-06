@@ -5,10 +5,12 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
 
-    <dimen name="detail_image_height">270dp</dimen>
+    <dimen name="detail_image_height">290dp</dimen>
     <dimen name="keyline_16dp">16dp</dimen>
     <dimen name="poster_height">225dp</dimen>
     <dimen name="sheet_text_scrim_height">88dp</dimen>
 
     <dimen name="grid_padding">5dp</dimen>
+
+    <dimen name="font_size_movie_field">16sp</dimen>
 </resources>

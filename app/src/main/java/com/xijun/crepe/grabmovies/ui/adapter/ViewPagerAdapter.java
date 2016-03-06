@@ -3,11 +3,11 @@ package com.xijun.crepe.grabmovies.ui.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.xijun.crepe.grabmovies.fragments.FavoritesFragment;
 import com.xijun.crepe.grabmovies.fragments.NowPlayingFragment;
 import com.xijun.crepe.grabmovies.fragments.TopRatedFragment;
+import com.xijun.crepe.grabmovies.utils.Const;
 
 /**
  * Created by LiXijun on 2016/3/4.
@@ -23,13 +23,13 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0:
+            case Const.FRAGMENT_NOW_PLAYING:
                 NowPlayingFragment nowPlayingFragment = new NowPlayingFragment();
                 return nowPlayingFragment;
-            case 1:
+            case Const.FRAGMENT_TOP_RATED:
                 TopRatedFragment topRatedFragment = new TopRatedFragment();
                 return topRatedFragment;
-            case 2:
+            case Const.FRAGMENT_FAVOURITES:
                 FavoritesFragment favoritesFragment = new FavoritesFragment();
                 return favoritesFragment;
             default:

@@ -1,6 +1,7 @@
 package com.xijun.crepe.grabmovies.ui.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.xijun.crepe.grabmovies.R;
 import com.xijun.crepe.grabmovies.model.Movie;
+import com.xijun.crepe.grabmovies.ui.viewholder.GridImageViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,23 +20,29 @@ import java.util.List;
 /**
  * Created by LiXijun on 2016/3/3.
  */
-public class GridImageAdapter extends BaseAdapter {
+public class GridImageAdapter extends RecyclerView.Adapter<GridImageViewHolder> {
     private Context context;
     private List<Movie> movieList = new ArrayList<>();
+    private int fragmentId =-1;
 
-    public GridImageAdapter(Context context, List<Movie> movieList) {
+    public GridImageAdapter(Context context, List<Movie> movieList, int fragmentId) {
         this.context = context;
         this.movieList = movieList;
+        this.fragmentId = fragmentId;
     }
 
     @Override
-    public int getCount() {
-        return movieList.size();
+    public GridImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.item_grid_movies, parent, false);
+        GridImageViewHolder viewHolder = new GridImageViewHolder(view, fragmentId);
+        return viewHolder;
     }
 
     @Override
-    public Movie getItem(int position) {
-        return movieList.get(position);
+    public void onBindViewHolder(GridImageViewHolder holder, int position) {
+        Movie movie = movieList.get(position);
+        Picasso.with(context).load(movie.getPosterPath()).placeholder(R.drawable.grid_placeholder).fit().centerCrop().into(holder.ivPoster);
     }
 
     @Override
@@ -43,37 +51,8 @@ public class GridImageAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-
-        if(convertView == null) {
-            // inflate the GridView item layout
-            LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.item_grid_movies, parent, false);
-
-            // initialize the view holder
-            viewHolder = new ViewHolder();
-            viewHolder.ivPoster = (ImageView) convertView.findViewById(R.id.ivGridItem);
-            convertView.setTag(viewHolder);
-        } else {
-            // recycle the already inflated view
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-
-        // update the item view
-        Picasso.with(context).load(movieList.get(position).getPosterPath()).placeholder(R.drawable.grid_placeholder).fit().centerInside().into(viewHolder.ivPoster);
-
-        return convertView;
-
+    public int getItemCount() {
+        return movieList.size();
     }
 
-    /**
-     * The view holder design pattern prevents using findViewById()
-     * repeatedly in the getView() method of the adapter.
-     *
-     * @see http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
-     */
-    private static class ViewHolder {
-        ImageView ivPoster;
-    }
 }

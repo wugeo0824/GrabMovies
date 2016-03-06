@@ -2,6 +2,7 @@ package com.xijun.crepe.grabmovies;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.util.Log;
@@ -20,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -27,6 +31,7 @@ import com.xijun.crepe.grabmovies.event.OnMovieInfoLoadedEvent;
 import com.xijun.crepe.grabmovies.event.OnTopRatedLoadedEvent;
 import com.xijun.crepe.grabmovies.model.MovieInfo;
 import com.xijun.crepe.grabmovies.network.MovieDBRequstHandler;
+import com.xijun.crepe.grabmovies.ui.customview.MovieField;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,9 +47,10 @@ public class DetailActivity extends AppCompatActivity {
     private Snackbar snack;
     private AppBarLayout appBar;
     private CoordinatorLayout coordinatorLayout;
+    private LinearLayout llFieldsContainer;
     private MovieInfo movieInfo;
     private ImageView ivBackdrop, ivPoster;
-    private TextView tvTitle, tvTagline, tvOverview;
+    private TextView tvTitle, tvTagline, tvOverview, tvMovieUrl;
     private CollapsingToolbarLayout collapsingToolbar;
     private float scrollPercentage = 0;
 
@@ -57,6 +63,7 @@ public class DetailActivity extends AppCompatActivity {
 
             ActivityOptionsCompat options = ActivityOptionsCompat.
                     makeSceneTransitionAnimation(startingActivity, sharedImageView, sharedImageView.getTransitionName());
+            //startingActivity.getWindow().setExitTransition(null);
             startingActivity.startActivity(intent, options.toBundle());
         } else {
             startingActivity.startActivity(intent, ActivityOptions.makeCustomAnimation(startingActivity, R.anim.slide_in_right,
@@ -76,7 +83,6 @@ public class DetailActivity extends AppCompatActivity {
             fade.excludeTarget(android.R.id.navigationBarBackground, true);
             getWindow().setEnterTransition(fade);
             getWindow().setReturnTransition(fade);
-
         }
 
         super.onCreate(savedInstanceState);
@@ -98,9 +104,11 @@ public class DetailActivity extends AppCompatActivity {
         ivPoster = (ImageView) findViewById(R.id.ivDetailPoster);
         tvTitle = (TextView) findViewById(R.id.tvDetailTitle);
         tvTagline = (TextView) findViewById(R.id.tvTagLine);
+        tvMovieUrl = (TextView) findViewById(R.id.tvMovieUrl);
         tvOverview = (TextView) findViewById(R.id.tvOverview);
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         appBar.addOnOffsetChangedListener(appBarOffsetChangedListener);
+        llFieldsContainer = (LinearLayout) findViewById(R.id.llFieldsContainer);
 
     }
 
@@ -153,15 +161,53 @@ public class DetailActivity extends AppCompatActivity {
 
     private void bindViews() {
         Picasso.with(this).load(movieInfo.getBackdropPath()).placeholder(R.drawable.image_placeholder).fit().centerCrop().into(ivBackdrop);
-        Picasso.with(this).load(movieInfo.getPosterPath()).placeholder(R.drawable.grid_placeholder).fit().centerInside().into(ivPoster);
+        Picasso.with(this).load(movieInfo.getPosterPath()).placeholder(R.drawable.grid_placeholder).fit().centerCrop().into(ivPoster);
         String[] date = movieInfo.getReleaseDate().split("-");
         String year = date[0];
         tvTitle.setText(movieInfo.getTitle() + " (" + year + ") ");
         tvTagline.setText(movieInfo.getTagline());
         tvOverview.setText(movieInfo.getOverview());
+        if (!TextUtils.isEmpty(movieInfo.getHomepage())){
+            tvMovieUrl.setText(movieInfo.getHomepage());
+            tvMovieUrl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(movieInfo.getHomepage()));
+                    startActivity(browserIntent);
+                }
+            });
+            tvMovieUrl.setVisibility(View.VISIBLE);
+        }else{
+            tvMovieUrl.setVisibility(View.GONE);
+        }
+
         collapsingToolbar.setTitle(movieInfo.getTitle());
+        if (movieInfo.getAdult() != null){
+            String right;
+            if(movieInfo.getAdult())
+                right = "yes";
+            else
+                right = "no";
+            llFieldsContainer.addView(new MovieField(this,"Adult Only",right));
+        }
+        if (!TextUtils.isEmpty(movieInfo.getStatus())){
+            llFieldsContainer.addView(new MovieField(this,"Status",movieInfo.getStatus()));
+        }
+        if (!TextUtils.isEmpty(movieInfo.getReleaseDate())){
+            llFieldsContainer.addView(new MovieField(this,"Release Date", movieInfo.getReleaseDate()));
+        }
+        if (movieInfo.getBudget()!=null){
+            llFieldsContainer.addView(new MovieField(this,"Budget","$" + movieInfo.getBudget()));
+        }
+        if (movieInfo.getRevenue()!=null){
+            llFieldsContainer.addView(new MovieField(this,"Revenue", "$" + movieInfo.getRevenue()));
+        }
+        if (movieInfo.getRuntime()!=null){
+            llFieldsContainer.addView(new MovieField(this,"Movie Length", movieInfo.getRuntime() + " min"));
+        }
 
     }
+
 
     @Override
     protected void onStart() {
@@ -191,6 +237,7 @@ public class DetailActivity extends AppCompatActivity {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 supportFinishAfterTransition();
+                onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);

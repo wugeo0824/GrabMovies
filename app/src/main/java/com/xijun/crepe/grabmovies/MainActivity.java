@@ -1,37 +1,26 @@
 package com.xijun.crepe.grabmovies;
 
-import android.graphics.drawable.Drawable;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.xijun.crepe.grabmovies.fragments.NowPlayingFragment;
 import com.xijun.crepe.grabmovies.ui.adapter.ViewPagerAdapter;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,18 +38,23 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
-    private String[] drawerTitles;
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
     private CoordinatorLayout coordinatorLayout;
+    private Toolbar toolbar;
+
+    // Keeps track of the overall vertical offset in the list
+    int verticalOffset;
+    // Determines the scroll UP/DOWN direction
+    boolean scrollingUp;
+    // The elevation of the toolbar when content is scrolled behind
+    private static final float TOOLBAR_ELEVATION = 14f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_test);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_menu);
         setSupportActionBar(toolbar);
 
@@ -71,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_main);
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
@@ -108,18 +101,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Snackbar snackBar;
-    public void showLoadingSnack(String message){
+
+    public void showLoadingSnack(String message) {
         snackBar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE);
         snackBar.show();
     }
 
-    public void showActionSnack(String message, String actionName, View.OnClickListener onclick){
-        snackBar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE).setAction(actionName,onclick);
+    public void showActionSnack(String message, String actionName, View.OnClickListener onclick) {
+        snackBar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_INDEFINITE).setAction(actionName, onclick);
         snackBar.show();
     }
 
-    public void hideSnack(){
-        if (snackBar !=null){
+    public void hideSnack() {
+        if (snackBar != null) {
             snackBar.dismiss();
         }
     }
@@ -153,6 +147,37 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void toolbarSetElevation(float elevation) {
+        // setElevation() only works on Lollipop
+        toolbar.setElevation(elevation);
+    }
+
+    private void toolbarAnimateShow(final int verticalOffset) {
+        toolbar.animate()
+                .translationY(0)
+                .setInterpolator(new LinearInterpolator())
+                .setDuration(180)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        toolbarSetElevation(verticalOffset == 0 ? 0 : TOOLBAR_ELEVATION);
+                    }
+                });
+    }
+
+    private void toolbarAnimateHide() {
+        toolbar.animate()
+                .translationY(-toolbar.getHeight())
+                .setInterpolator(new LinearInterpolator())
+                .setDuration(180)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        toolbarSetElevation(0);
+                    }
+                });
+    }
 
 
 }
